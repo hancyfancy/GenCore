@@ -42,6 +42,10 @@ namespace GenCore.Data.Repositories.Implementation
                                                         WHERE TABLE_SCHEMA = 'production' 
                                                         AND  TABLE_NAME = 'products'))
 									AND
+										(EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
+                                                        WHERE TABLE_SCHEMA = 'audit' 
+                                                        AND  TABLE_NAME = 'products'))
+									AND
 										(NOT EXISTS (SELECT type_desc FROM sys.triggers WHERE object_id = OBJECT_ID(N'production.products_tr_delete')))
                                     BEGIN
                                         CREATE TRIGGER production.products_tr_delete
@@ -107,6 +111,10 @@ namespace GenCore.Data.Repositories.Implementation
                                                         WHERE TABLE_SCHEMA = 'production' 
                                                         AND  TABLE_NAME = 'products'))
 									AND
+										(EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
+                                                        WHERE TABLE_SCHEMA = 'audit' 
+                                                        AND  TABLE_NAME = 'products'))
+									AND
 										(NOT EXISTS (SELECT type_desc FROM sys.triggers WHERE object_id = OBJECT_ID(N'production.products_tr_insert')))
                                     BEGIN
                                         CREATE TRIGGER production.products_tr_insert
@@ -170,6 +178,10 @@ namespace GenCore.Data.Repositories.Implementation
                                     IF 
 	                                    (EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
                                                         WHERE TABLE_SCHEMA = 'production' 
+                                                        AND  TABLE_NAME = 'products'))
+									AND
+										(EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
+                                                        WHERE TABLE_SCHEMA = 'audit' 
                                                         AND  TABLE_NAME = 'products'))
 									AND
 										(NOT EXISTS (SELECT type_desc FROM sys.triggers WHERE object_id = OBJECT_ID(N'production.products_tr_update')))

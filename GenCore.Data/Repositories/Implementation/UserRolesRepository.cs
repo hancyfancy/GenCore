@@ -17,6 +17,73 @@ namespace GenCore.Data.Repositories.Implementation
         public UserRolesRepository(string connectionString)
         {
             _connectionString = connectionString;
+            CreateTable();
+        }
+
+        private int CreateTable()
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    string sql = $@"IF 
+	                                    (NOT EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
+                                                        WHERE TABLE_SCHEMA = 'auth' 
+                                                        AND  TABLE_NAME = 'userroles')) 
+                                    AND
+	                                    (EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
+                                                        WHERE TABLE_SCHEMA = 'auth' 
+                                                        AND  TABLE_NAME = 'users'))
+									AND
+	                                    (EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
+                                                        WHERE TABLE_SCHEMA = 'auth' 
+                                                        AND  TABLE_NAME = 'roles'))
+                                    BEGIN
+                                        CREATE TABLE auth.userroles (
+											UserRoleId BIGINT IDENTITY (1, 1) PRIMARY KEY,
+											UserId BIGINT NOT NULL FOREIGN KEY REFERENCES auth.users(UserId) ON DELETE NO ACTION,
+											RoleId BIGINT NOT NULL FOREIGN KEY REFERENCES auth.roles(RoleId) ON DELETE NO ACTION,
+											UNIQUE (UserId, RoleId),
+											UNIQUE (UserId)
+										)
+                                    END";
+
+                    var result = connection.Execute(sql);
+
+                    connection.Close();
+
+                    return result;
+                }
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
+        }
+
+        private int DropTable()
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    string sql = $@"DROP TABLE IF EXISTS auth.userroles";
+
+                    var result = connection.Execute(sql);
+
+                    connection.Close();
+
+                    return result;
+                }
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
         }
 
         public int Insert(long userId)

@@ -25,6 +25,87 @@ namespace GenCore.Data.Repositories.Implementation
             CreateDeleteTrigger();
             CreateInsertTrigger();
             CreateUpdateTrigger();
+            CreateTestDataStoredProcedure();
+        }
+
+        private int CreateTestDataStoredProcedure()
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    string sql = $@"USE {_database}
+
+                                    IF 
+	                                    (EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
+                                                                                            WHERE TABLE_SCHEMA = 'production' 
+                                                                                            AND  TABLE_NAME = 'products'))
+                                    AND
+	                                    (NOT EXISTS (
+                                            SELECT type_desc
+                                            FROM sys.procedures WITH(NOLOCK)
+                                            WHERE object_id = OBJECT_ID(N'production.products_sp')
+                                          ))
+                                    BEGIN
+	                                    CREATE PROCEDURE production.products_sp
+		                                    @TypeEnum SMALLINT = NULL
+	                                    AS 
+	                                    BEGIN
+		                                    INSERT INTO production.products
+		                                    (                    
+			                                    Name,
+			                                    Price,
+			                                    Type,
+			                                    Active
+		                                    ) 
+		                                    VALUES 
+		                                    ( 
+			                                    CONVERT(NVARCHAR(100), NEWID()),
+			                                    CONVERT(DECIMAL(18, 2), 5 + (2000-5)*RAND(CHECKSUM(NEWID()))),
+			                                    CASE @TypeEnum WHEN 1 THEN 'Books' WHEN 2 THEN 'Electronics' WHEN 3 THEN 'Food' WHEN 4 THEN 'Furniture' WHEN 5 THEN 'Toys' ELSE 'NA' END,
+			                                    ABS(CHECKSUM(NEWID())) % 2
+		                                    )
+	                                    END
+                                    END";
+
+                    var result = connection.Execute(sql);
+
+                    connection.Close();
+
+                    return result;
+                }
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
+        }
+
+        private int DropTriggers()
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    string sql = $@"USE {_database}
+
+                                    DROP PROCEDURE IF EXISTS production.products_sp";
+
+                    var result = connection.Execute(sql);
+
+                    connection.Close();
+
+                    return result;
+                }
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
         }
 
         private int CreateDeleteTrigger()

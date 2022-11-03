@@ -28,13 +28,16 @@ namespace GenCore.Data.Repositories.Implementation
 
                     string sql = $@"USE {_database}
 
-                                    INSERT INTO auth.roles (Role, SubRole) VALUES ('Admin', 'Standard')
-                                    INSERT INTO auth.roles (Role, SubRole) VALUES ('Specialist', 'Standard')
-                                    INSERT INTO auth.roles (Role, SubRole) VALUES ('User', 'Standard')
-                                    INSERT INTO auth.roles (Role, SubRole) VALUES ('User', 'Bronze')
-                                    INSERT INTO auth.roles (Role, SubRole) VALUES ('User', 'Silver')
-                                    INSERT INTO auth.roles (Role, SubRole) VALUES ('User', 'Gold')
-                                    INSERT INTO auth.roles (Role, SubRole) VALUES ('User', 'Platinum')";
+                                    IF NOT EXISTS (SELECT 1 FROM auth.roles)
+									BEGIN
+										INSERT INTO auth.roles (Role, SubRole) VALUES ('Admin', 'Standard')
+										INSERT INTO auth.roles (Role, SubRole) VALUES ('Specialist', 'Standard')
+										INSERT INTO auth.roles (Role, SubRole) VALUES ('User', 'Standard')
+										INSERT INTO auth.roles (Role, SubRole) VALUES ('User', 'Bronze')
+										INSERT INTO auth.roles (Role, SubRole) VALUES ('User', 'Silver')
+										INSERT INTO auth.roles (Role, SubRole) VALUES ('User', 'Gold')
+										INSERT INTO auth.roles (Role, SubRole) VALUES ('User', 'Platinum')
+									END";
 
                     var result = connection.Execute(sql);
 

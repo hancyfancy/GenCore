@@ -18,6 +18,68 @@ namespace GenCore.Data.Repositories.Implementation
         public UserVerificationRepository(string connectionString)
         {
             _connectionString = connectionString;
+            CreateTable();
+        }
+
+        private int CreateTable()
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    string sql = $@"IF 
+	                                    (NOT EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
+                                                        WHERE TABLE_SCHEMA = 'auth' 
+                                                        AND  TABLE_NAME = 'userverification')) 
+                                    AND
+	                                    (EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
+                                                        WHERE TABLE_SCHEMA = 'auth' 
+                                                        AND  TABLE_NAME = 'users'))
+                                    BEGIN
+                                        CREATE TABLE auth.userverification (
+											UserVerificationId BIGINT IDENTITY (1, 1) PRIMARY KEY,
+											UserId BIGINT NOT NULL FOREIGN KEY REFERENCES auth.users(UserId) ON DELETE CASCADE,
+											EmailVerified BIT NOT NULL,
+											PhoneVerified BIT NOT NULL
+										)
+                                    END";
+
+                    var result = connection.Execute(sql);
+
+                    connection.Close();
+
+                    return result;
+                }
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
+        }
+
+        private int DropTable()
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    string sql = $@"DROP TABLE IF EXISTS auth.userverification";
+
+                    var result = connection.Execute(sql);
+
+                    connection.Close();
+
+                    return result;
+                }
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
         }
 
         public int Insert(UserVerification userVerification)

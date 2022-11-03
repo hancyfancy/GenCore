@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GenCore.Data.Repositories.Implementation
 {
-    public class RepositoryBase
+    public abstract class RepositoryBase
     {
         protected readonly string _connectionString;
         protected readonly string _database;

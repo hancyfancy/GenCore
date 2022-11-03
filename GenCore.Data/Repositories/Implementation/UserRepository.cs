@@ -26,7 +26,9 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"IF 
+                    string sql = $@"USE {_database}
+
+                                    IF 
 	                                    (NOT EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
                                                         WHERE TABLE_SCHEMA = 'auth' 
                                                         AND  TABLE_NAME = 'users'))
@@ -62,7 +64,9 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"DROP TABLE IF EXISTS auth.userencryption
+                    string sql = $@"USE {_database}
+
+                                    DROP TABLE IF EXISTS auth.userencryption
                                     DROP TABLE IF EXISTS auth.usertokens
                                     DROP TABLE IF EXISTS auth.userroles
                                     DROP TABLE IF EXISTS auth.userverification
@@ -89,30 +93,32 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"BEGIN
-                                   IF NOT EXISTS (SELECT UserId FROM auth.users WHERE Username = @Username)
-                                   BEGIN
-                                        INSERT INTO auth.users
-		                                (                    
-			                                Username,
-			                                Email,
-			                                Phone,
-			                                LastActive
-		                                )
-		                                OUTPUT inserted.UserId 
-		                                VALUES 
-		                                ( 
-			                                @Username,
-			                                @Email,
-			                                @Phone,
-			                                @LastActive
-		                                )
-                                   END
-								   ELSE
-								   BEGIN
-										SELECT UserId FROM auth.users WHERE Username = @Username 
-								   END
-                                END";
+                    string sql = $@"USE {_database}
+
+                                    BEGIN
+                                        IF NOT EXISTS (SELECT UserId FROM auth.users WHERE Username = @Username)
+                                        BEGIN
+                                            INSERT INTO auth.users
+		                                    (                    
+			                                    Username,
+			                                    Email,
+			                                    Phone,
+			                                    LastActive
+		                                    )
+		                                    OUTPUT inserted.UserId 
+		                                    VALUES 
+		                                    ( 
+			                                    @Username,
+			                                    @Email,
+			                                    @Phone,
+			                                    @LastActive
+		                                    )
+                                        END
+							            ELSE
+							            BEGIN
+								            SELECT UserId FROM auth.users WHERE Username = @Username 
+							            END
+                                    END";
                     var result = connection.ExecuteScalar<long>(sql, new
                     {
                         Username = user.Username,
@@ -141,12 +147,14 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"UPDATE
-	                                auth.users
-                                SET
-	                                LastActive = @LastActive
-                                WHERE
-                                    UserId = @UserId";
+                    string sql = $@"USE {_database}
+
+                                    UPDATE
+	                                    auth.users
+                                    SET
+	                                    LastActive = @LastActive
+                                    WHERE
+                                        UserId = @UserId";
                     var result = connection.Execute(sql, new
                     {
                         UserId = userId,

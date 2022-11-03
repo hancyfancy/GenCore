@@ -26,7 +26,9 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"IF 
+                    string sql = $@"USE {_database}
+
+                                    IF 
 	                                    (NOT EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
                                                         WHERE TABLE_SCHEMA = 'auth' 
                                                         AND  TABLE_NAME = 'usertokens')) 
@@ -66,7 +68,9 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"DROP TABLE IF EXISTS auth.usertokens";
+                    string sql = $@"USE {_database}
+
+                                    DROP TABLE IF EXISTS auth.usertokens";
 
                     var result = connection.Execute(sql);
 
@@ -89,26 +93,28 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"IF EXISTS (SELECT UserTokenId FROM auth.usertokens WHERE UserId = @UserId)
-                                BEGIN
-	                                IF (SELECT RefreshAt FROM auth.usertokens WHERE UserId = @UserId) > GETUTCDATE()
-	                                BEGIN
-		                                UPDATE 
-			                                auth.usertokens
-		                                SET	
-			                                Token = @Token,
-			                                RefreshAt = @RefreshAt
-                                        OUTPUT inserted.Token
-		                                WHERE
-			                                UserId = @UserId
-	                                END
-                                END
-                                ELSE
-                                BEGIN
-                                    INSERT INTO auth.usertokens (UserId, Token, RefreshAt)
-									OUTPUT inserted.Token 
-	                                VALUES (@UserId, @Token, @RefreshAt)
-                                END";
+                    string sql = $@"USE {_database}
+
+                                    IF EXISTS (SELECT UserTokenId FROM auth.usertokens WHERE UserId = @UserId)
+                                    BEGIN
+	                                    IF (SELECT RefreshAt FROM auth.usertokens WHERE UserId = @UserId) > GETUTCDATE()
+	                                    BEGIN
+		                                    UPDATE 
+			                                    auth.usertokens
+		                                    SET	
+			                                    Token = @Token,
+			                                    RefreshAt = @RefreshAt
+                                            OUTPUT inserted.Token
+		                                    WHERE
+			                                    UserId = @UserId
+	                                    END
+                                    END
+                                    ELSE
+                                    BEGIN
+                                        INSERT INTO auth.usertokens (UserId, Token, RefreshAt)
+									    OUTPUT inserted.Token 
+	                                    VALUES (@UserId, @Token, @RefreshAt)
+                                    END";
                     var result = connection.ExecuteScalar<string>(sql, new
                     {
                         UserId = userId,
@@ -135,7 +141,9 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"SELECT 
+                    string sql = $@"USE {_database}
+
+                                    SELECT 
                                         t.UserTokenId,
 										t.Token,
 										t.RefreshAt
@@ -167,7 +175,9 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"SELECT 
+                    string sql = $@"USE {_database}
+
+                                    SELECT 
                                         u.UserId,
 										u.Username,
 										u.Email,

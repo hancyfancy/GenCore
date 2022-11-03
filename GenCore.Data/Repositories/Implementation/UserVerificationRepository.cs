@@ -26,7 +26,9 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"IF 
+                    string sql = $@"USE {_database}
+
+                                    IF 
 	                                    (NOT EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
                                                         WHERE TABLE_SCHEMA = 'auth' 
                                                         AND  TABLE_NAME = 'userverification')) 
@@ -64,7 +66,9 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"DROP TABLE IF EXISTS auth.userverification";
+                    string sql = $@"USE {_database}
+
+                                    DROP TABLE IF EXISTS auth.userverification";
 
                     var result = connection.Execute(sql);
 
@@ -87,23 +91,25 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"BEGIN
-                                   IF NOT EXISTS (SELECT UserVerificationId FROM auth.userverification WHERE UserId = @UserId)
-                                   BEGIN
-                                        INSERT INTO auth.userverification
-		                                (                    
-			                                UserId,
-			                                EmailVerified,
-			                                PhoneVerified
-		                                )
-		                                VALUES 
-		                                ( 
-			                                @UserId,
-			                                @EmailVerified,
-			                                @PhoneVerified
-		                                )
-                                   END
-                                END";
+                    string sql = $@"USE {_database}
+
+                                    BEGIN
+                                        IF NOT EXISTS (SELECT UserVerificationId FROM auth.userverification WHERE UserId = @UserId)
+                                        BEGIN
+                                            INSERT INTO auth.userverification
+		                                    (                    
+			                                    UserId,
+			                                    EmailVerified,
+			                                    PhoneVerified
+		                                    )
+		                                    VALUES 
+		                                    ( 
+			                                    @UserId,
+			                                    @EmailVerified,
+			                                    @PhoneVerified
+		                                    )
+                                        END
+                                    END";
                     var result = connection.Execute(sql, new
                     {
                         UserId = userVerification.UserId,
@@ -130,17 +136,19 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"BEGIN
-                                   IF EXISTS (SELECT UserVerificationId FROM auth.userverification WHERE UserId = @UserId)
-                                   BEGIN
-                                        UPDATE
-			                                auth.userverification
-		                                SET
-			                                EmailVerified = 1
-		                                WHERE
-			                                UserId = @UserId
-                                   END
-                                END";
+                    string sql = $@"USE {_database}
+
+                                    BEGIN
+                                        IF EXISTS (SELECT UserVerificationId FROM auth.userverification WHERE UserId = @UserId)
+                                        BEGIN
+                                            UPDATE
+			                                    auth.userverification
+		                                    SET
+			                                    EmailVerified = 1
+		                                    WHERE
+			                                    UserId = @UserId
+                                        END
+                                    END";
                     var result = connection.Execute(sql, new
                     {
                         UserId = userId,
@@ -165,17 +173,19 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"BEGIN
-                                   IF EXISTS (SELECT UserVerificationId FROM auth.userverification WHERE UserId = @UserId)
-                                   BEGIN
-                                        UPDATE
-			                                auth.userverification
-		                                SET
-			                                PhoneVerified = 1
-		                                WHERE
-			                                UserId = @UserId
-                                   END
-                                END";
+                    string sql = $@"USE {_database}
+
+                                    BEGIN
+                                        IF EXISTS (SELECT UserVerificationId FROM auth.userverification WHERE UserId = @UserId)
+                                        BEGIN
+                                            UPDATE
+			                                    auth.userverification
+		                                    SET
+			                                    PhoneVerified = 1
+		                                    WHERE
+			                                    UserId = @UserId
+                                        END
+                                    END";
                     var result = connection.Execute(sql, new
                     {
                         UserId = userId,
@@ -200,7 +210,9 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"SELECT 
+                    string sql = $@"USE {_database}
+
+                                    SELECT 
                                         v.UserVerificationId,
 										u.UserId,
 										v.EmailVerified,

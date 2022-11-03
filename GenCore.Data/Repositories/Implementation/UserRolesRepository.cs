@@ -25,7 +25,9 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"IF 
+                    string sql = $@"USE {_database}
+
+                                    IF 
 	                                    (NOT EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
                                                         WHERE TABLE_SCHEMA = 'auth' 
                                                         AND  TABLE_NAME = 'userroles')) 
@@ -68,7 +70,9 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"DROP TABLE IF EXISTS auth.userroles";
+                    string sql = $@"USE {_database}
+
+                                    DROP TABLE IF EXISTS auth.userroles";
 
                     var result = connection.Execute(sql);
 
@@ -91,21 +95,23 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"BEGIN
-                                   IF NOT EXISTS (SELECT UserRoleId FROM auth.userroles WHERE UserId = @UserId)
-                                   BEGIN
-                                        INSERT INTO auth.userroles
-		                                (                    
-			                                UserId,
-			                                RoleId
-		                                )
-		                                VALUES 
-		                                ( 
-			                                @UserId,
-			                                (SELECT RoleId FROM auth.roles WHERE Role = 'User' AND SubRole = 'Standard')
-		                                )
-                                   END
-                                END";
+                    string sql = $@"USE {_database}
+
+                                    BEGIN
+                                        IF NOT EXISTS (SELECT UserRoleId FROM auth.userroles WHERE UserId = @UserId)
+                                        BEGIN
+                                            INSERT INTO auth.userroles
+		                                    (                    
+			                                    UserId,
+			                                    RoleId
+		                                    )
+		                                    VALUES 
+		                                    ( 
+			                                    @UserId,
+			                                    (SELECT RoleId FROM auth.roles WHERE Role = 'User' AND SubRole = 'Standard')
+		                                    )
+                                        END
+                                    END";
                     var result = connection.Execute(sql, new
                     {
                         UserId = userId
@@ -130,12 +136,14 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"UPDATE
-	                                auth.userroles
-                                SET
-	                                RoleId = (SELECT RoleId FROM auth.roles WHERE Role = @Role AND SubRole = @SubRole)
-                                WHERE
-                                    UserId = @UserId";
+                    string sql = $@"USE {_database}
+
+                                    UPDATE
+	                                    auth.userroles
+                                    SET
+	                                    RoleId = (SELECT RoleId FROM auth.roles WHERE Role = @Role AND SubRole = @SubRole)
+                                    WHERE
+                                        UserId = @UserId";
                     var result = connection.Execute(sql, new
                     {
                         UserId = userId,

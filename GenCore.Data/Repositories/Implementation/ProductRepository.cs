@@ -32,7 +32,9 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"IF 
+                    string sql = $@"USE {_database}
+
+                                    IF 
 	                                    (NOT EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
                                                         WHERE TABLE_SCHEMA = 'production' 
                                                         AND  TABLE_NAME = 'products')) 
@@ -67,7 +69,9 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"DROP TABLE IF EXISTS production.products";
+                    string sql = $@"USE {_database}
+
+                                    DROP TABLE IF EXISTS production.products";
 
                     var result = connection.Execute(sql);
 
@@ -90,7 +94,9 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"SELECT 
+                    string sql = $@"USE {_database}
+
+                                    SELECT 
                                         p.ProductId,
 	                                    p.Name, 
 	                                    p.Price, 
@@ -119,7 +125,9 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"INSERT INTO production.products
+                    string sql = $@"USE {_database}
+
+                                    INSERT INTO production.products
                                     (                    
 	                                    Name,
 	                                    Price,
@@ -167,12 +175,14 @@ namespace GenCore.Data.Repositories.Implementation
 
                     connection.Open();
 
-                    string sql = $@"UPDATE
-	                                production.products
-                                SET
-	                                {updateSql}
-                                WHERE
-                                    ProductId = @Id";
+                    string sql = $@"USE {_database}
+
+                                    UPDATE
+	                                    production.products
+                                    SET
+	                                    {updateSql}
+                                    WHERE
+                                        ProductId = @Id";
                     var result = connection.Execute(sql, new
                     {
                         Id = id
@@ -197,10 +207,12 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"DELETE FROM
-	                                production.products
-                                WHERE
-	                                ProductId = @Id";
+                    string sql = $@"USE {_database}
+
+                                    DELETE FROM
+	                                    production.products
+                                    WHERE
+	                                    ProductId = @Id";
                     var result = connection.Execute(sql, new
                     {
                         Id = id

@@ -25,7 +25,9 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"IF 
+                    string sql = $@"USE {_database}
+
+                                    IF 
 	                                    (NOT EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
                                                         WHERE TABLE_SCHEMA = 'auth' 
                                                         AND  TABLE_NAME = 'userencryption')) 
@@ -63,7 +65,9 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"DROP TABLE IF EXISTS auth.userencryption";
+                    string sql = $@"USE {_database}
+
+                                    DROP TABLE IF EXISTS auth.userencryption";
 
                     var result = connection.Execute(sql);
 
@@ -86,7 +90,9 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"IF EXISTS (SELECT UserEncryptionId FROM auth.userencryption WHERE UserId = @UserId)
+                    string sql = $@"USE {_database}
+
+                                    IF EXISTS (SELECT UserEncryptionId FROM auth.userencryption WHERE UserId = @UserId)
                                     BEGIN
 		                                UPDATE 
 			                                auth.userencryption
@@ -128,7 +134,9 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"SELECT 
+                    string sql = $@"USE {_database}
+
+                                    SELECT 
                                         e.UserEncryptionId,
 										e.EncryptionKey
                                     FROM 

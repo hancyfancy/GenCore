@@ -24,7 +24,9 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"IF 
+                    string sql = $@"USE {_database}
+
+                                    IF 
 	                                    (NOT EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
                                                         WHERE TABLE_SCHEMA = 'auth' 
                                                         AND  TABLE_NAME = 'roles'))
@@ -57,7 +59,9 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"DROP TABLE IF EXISTS auth.userroles
+                    string sql = $@"USE {_database}
+
+                                    DROP TABLE IF EXISTS auth.userroles
                                     DROP TABLE IF EXISTS auth.roles";
 
                     var result = connection.Execute(sql);

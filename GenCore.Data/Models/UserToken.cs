@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GenCore.Data.Models
 {
-    public class UserToken
+    public class UserToken : User
     {
         public long UserTokenId { get; set; }
 

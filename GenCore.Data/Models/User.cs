@@ -18,10 +18,6 @@ namespace GenCore.Data.Models
 
         public string Role { get; set; }
 
-        public string Token { get; set; }
-
-        public DateTime Expiry { get; set; }
-
         public DateTime LastActive { get; set; }
     }
 }

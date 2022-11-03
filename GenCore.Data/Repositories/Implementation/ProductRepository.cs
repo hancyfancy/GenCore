@@ -26,6 +26,40 @@ namespace GenCore.Data.Repositories.Implementation
             CreateInsertTrigger();
             CreateUpdateTrigger();
             CreateTestDataStoredProcedure();
+            LoadTestData(1300);
+        }
+
+        private int LoadTestData(int dataSize)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    string sql = $@"USE {_database}
+
+                                    DECLARE @i INT = 0
+                                    DECLARE @TypeEnum SMALLINT
+
+                                    WHILE @i < {dataSize}   
+                                    BEGIN
+                                        SET @i = @i + 1
+                                        SET @TypeEnum = CONVERT(SMALLINT, 1 + (6-1)*RAND(CHECKSUM(NEWID())))
+	                                    EXEC production.products_sp @TypeEnum
+                                    END";
+
+                    var result = connection.Execute(sql);
+
+                    connection.Close();
+
+                    return result;
+                }
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
         }
 
         private int CreateTestDataStoredProcedure()
@@ -83,7 +117,7 @@ namespace GenCore.Data.Repositories.Implementation
             }
         }
 
-        private int DropTriggers()
+        private int DropStoredProcedures()
         {
             try
             {

@@ -1,4 +1,4 @@
-﻿using GenCore.Data.Enumerations;
+﻿using GenConversion.Service.Enumerations;
 using System;
 using System.Collections.Generic;
 using System.Linq;

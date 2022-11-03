@@ -1,4 +1,7 @@
 ﻿using Dapper;
+using GenConversion.Service.Utilities.Implementation;
+using GenConversion.Service.Utilities.Interface;
+using GenCore.Data.Extensions;
 using GenCore.Data.Models;
 using GenCore.Data.Repositories.Interface;
 using System;
@@ -14,10 +17,12 @@ namespace GenCore.Data.Repositories.Implementation
     public class ProductRepository : IProductRepository
     {
         private readonly string _connectionString;
+        private readonly ISqlConverter _sqlConverter;
 
         public ProductRepository(string connectionString)
         {
             _connectionString = connectionString;
+            _sqlConverter = new JsonToSqlUpdateParameterConverter();
         }
 
         public IEnumerable<Product> Get()

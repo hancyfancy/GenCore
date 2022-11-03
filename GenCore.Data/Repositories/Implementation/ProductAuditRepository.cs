@@ -11,13 +11,10 @@ using System.Threading.Tasks;
 
 namespace GenCore.Data.Repositories.Implementation
 {
-    public class ProductAuditRepository : IProductAuditRepository
+    public class ProductAuditRepository : RepositoryBase, IProductAuditRepository
     {
-        private readonly string _connectionString;
-
-        public ProductAuditRepository(string connectionString)
+        public ProductAuditRepository(string connectionString) : base(connectionString)
         {
-            _connectionString = connectionString;
             CreateTable();
         }
 
@@ -29,7 +26,9 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"IF 
+                    string sql = $@"USE {_database}
+
+                                    IF 
 	                                    (NOT EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
                                                         WHERE TABLE_SCHEMA = 'audit' 
                                                         AND  TABLE_NAME = 'products')) 
@@ -69,7 +68,9 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"DROP TABLE IF EXISTS audit.products";
+                    string sql = $@"USE {_database}
+
+                                    DROP TABLE IF EXISTS audit.products";
 
                     var result = connection.Execute(sql);
 
@@ -92,17 +93,19 @@ namespace GenCore.Data.Repositories.Implementation
                 {
                     connection.Open();
 
-                    string sql = $@"SELECT 
-                                    p.ProductAuditId,
-	                                p.ObjJson,
-	                                p.AuditDateTime
-                                FROM 
-	                                audit.products p
-                                WHERE
-	                                p.EventType = 'UPDATE'
-									AND p.ProductId = @ProductId
-								ORDER BY 
-									p.AuditDateTime";
+                    string sql = $@"USE {_database}
+
+                                    SELECT 
+                                        p.ProductAuditId,
+	                                    p.ObjJson,
+	                                    p.AuditDateTime
+                                    FROM 
+	                                    audit.products p
+                                    WHERE
+	                                    p.EventType = 'UPDATE'
+									    AND p.ProductId = @ProductId
+								    ORDER BY 
+									    p.AuditDateTime";
                     var result = connection.Query<ProductAudit>(sql, new
                     {
                         ProductId = productId

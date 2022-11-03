@@ -10,13 +10,10 @@ using System.Threading.Tasks;
 
 namespace GenCore.Data.Repositories.Implementation
 {
-    public class UserEncryptionRepository : IUserEncryptionRepository
+    public class UserEncryptionRepository : RepositoryBase, IUserEncryptionRepository
     {
-        private readonly string _connectionString;
-
-        public UserEncryptionRepository(string connectionString)
+        public UserEncryptionRepository(string connectionString) : base(connectionString)
         {
-            _connectionString = connectionString;
             CreateTable();
         }
 

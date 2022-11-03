@@ -11,13 +11,10 @@ using System.Threading.Tasks;
 
 namespace GenCore.Data.Repositories.Implementation
 {
-    public class UserTokensRepository : IUserTokensRepository
+    public class UserTokensRepository : RepositoryBase, IUserTokensRepository
     {
-        private readonly string _connectionString;
-
-        public UserTokensRepository(string connectionString)
+        public UserTokensRepository(string connectionString) : base(connectionString)
         {
-            _connectionString = connectionString;
             CreateTable();
         }
 

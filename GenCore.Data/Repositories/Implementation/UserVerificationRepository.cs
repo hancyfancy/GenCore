@@ -11,13 +11,10 @@ using System.Threading.Tasks;
 
 namespace GenCore.Data.Repositories.Implementation
 {
-    public class UserVerificationRepository : IUserVerificationRepository
+    public class UserVerificationRepository : RepositoryBase, IUserVerificationRepository
     {
-        private readonly string _connectionString;
-
-        public UserVerificationRepository(string connectionString)
+        public UserVerificationRepository(string connectionString) : base(connectionString)
         {
-            _connectionString = connectionString;
             CreateTable();
         }
 

@@ -10,13 +10,10 @@ using System.Threading.Tasks;
 
 namespace GenCore.Data.Repositories.Implementation
 {
-    public class UserRolesRepository : IUserRolesRepository
+    public class UserRolesRepository : RepositoryBase, IUserRolesRepository
     {
-        private readonly string _connectionString;
-
-        public UserRolesRepository(string connectionString)
+        public UserRolesRepository(string connectionString) : base(connectionString)
         {
-            _connectionString = connectionString;
             CreateTable();
         }
 

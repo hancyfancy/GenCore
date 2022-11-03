@@ -14,14 +14,12 @@ using System.Threading.Tasks;
 
 namespace GenCore.Data.Repositories.Implementation
 {
-    public class ProductRepository : IProductRepository
+    public class ProductRepository : RepositoryBase, IProductRepository
     {
-        private readonly string _connectionString;
         private readonly ISqlConverter _sqlConverter;
 
-        public ProductRepository(string connectionString)
+        public ProductRepository(string connectionString) : base(connectionString)
         {
-            _connectionString = connectionString;
             _sqlConverter = new JsonToSqlUpdateParameterConverter();
             CreateTable();
         }

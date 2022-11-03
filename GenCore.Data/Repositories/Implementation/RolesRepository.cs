@@ -9,13 +9,10 @@ using System.Threading.Tasks;
 
 namespace GenCore.Data.Repositories.Implementation
 {
-    public class RolesRepository : IRolesRepository
+    public class RolesRepository : RepositoryBase, IRolesRepository
     {
-        private readonly string _connectionString;
-
-        public RolesRepository(string connectionString)
+        public RolesRepository(string connectionString) : base(connectionString)
         {
-            _connectionString = connectionString;
             CreateTable();
         }
 

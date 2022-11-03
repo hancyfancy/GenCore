@@ -18,6 +18,70 @@ namespace GenCore.Data.Repositories.Implementation
         public UserTokensRepository(string connectionString)
         {
             _connectionString = connectionString;
+            CreateTable();
+        }
+
+        private int CreateTable()
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    string sql = $@"IF 
+	                                    (NOT EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
+                                                        WHERE TABLE_SCHEMA = 'auth' 
+                                                        AND  TABLE_NAME = 'usertokens')) 
+                                    AND
+	                                    (EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
+                                                        WHERE TABLE_SCHEMA = 'auth' 
+                                                        AND  TABLE_NAME = 'users'))
+                                    BEGIN
+                                        CREATE TABLE auth.usertokens (
+											UserTokenId BIGINT IDENTITY (1, 1) PRIMARY KEY,
+											UserId BIGINT NOT NULL FOREIGN KEY REFERENCES auth.users(UserId) ON DELETE CASCADE,
+											Token NVARCHAR (200) NOT NULL CHECK ((LEN(Token) = 200) OR (LEN(Token) = 6)),
+											RefreshAt DATETIME NOT NULL CHECK (RefreshAt > GETDATE()),
+											UNIQUE (UserId),
+											UNIQUE (Token)
+										)
+                                    END";
+
+                    var result = connection.Execute(sql);
+
+                    connection.Close();
+
+                    return result;
+                }
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
+        }
+
+        private int DropTable()
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    string sql = $@"DROP TABLE IF EXISTS auth.usertokens";
+
+                    var result = connection.Execute(sql);
+
+                    connection.Close();
+
+                    return result;
+                }
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
         }
 
         public string InsertOrUpdate(long userId, string token)

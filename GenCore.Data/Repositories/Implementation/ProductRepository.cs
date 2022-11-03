@@ -39,15 +39,18 @@ namespace GenCore.Data.Repositories.Implementation
 
                     string sql = $@"USE {_database}
 
-                                    DECLARE @i INT = 0
-                                    DECLARE @TypeEnum SMALLINT
+                                    IF NOT EXISTS (SELECT 1 FROM production.products)
+									BEGIN
+										DECLARE @i INT = 0
+										DECLARE @TypeEnum SMALLINT
 
-                                    WHILE @i < {dataSize}   
-                                    BEGIN
-                                        SET @i = @i + 1
-                                        SET @TypeEnum = CONVERT(SMALLINT, 1 + (6-1)*RAND(CHECKSUM(NEWID())))
-	                                    EXEC production.products_sp @TypeEnum
-                                    END";
+										WHILE @i < {dataSize}   
+										BEGIN
+											SET @i = @i + 1
+											SET @TypeEnum = CONVERT(SMALLINT, 1 + (6-1)*RAND(CHECKSUM(NEWID())))
+											EXEC production.products_sp @TypeEnum
+										END
+									END";
 
                     var result = connection.Execute(sql);
 

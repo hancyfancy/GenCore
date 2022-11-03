@@ -17,6 +17,7 @@ namespace GenCore.Data.Repositories.Implementation
         public UserEncryptionRepository(string connectionString)
         {
             _connectionString = connectionString;
+            CreateTable();
         }
 
         private int CreateTable()
@@ -84,8 +85,6 @@ namespace GenCore.Data.Repositories.Implementation
         {
             try
             {
-                CreateTable();
-
                 using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
                     connection.Open();
@@ -128,8 +127,6 @@ namespace GenCore.Data.Repositories.Implementation
         {
             try
             {
-                CreateTable();
-
                 using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
                     connection.Open();

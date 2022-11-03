@@ -24,7 +24,7 @@ namespace GenCore.Data.Repositories.Implementation
             CreateTable();
             CreateDeleteTrigger();
             CreateInsertTrigger();
-            CreateInsertTrigger();
+            CreateUpdateTrigger();
         }
 
         private int CreateDeleteTrigger()

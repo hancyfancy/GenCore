@@ -15,6 +15,38 @@ namespace GenCore.Data.Repositories.Implementation
         {
             CreateTable();
             CreateDeleteTrigger();
+            LoadData();
+        }
+
+        private int LoadData()
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    string sql = $@"USE {_database}
+
+                                    INSERT INTO auth.roles (Role, SubRole) VALUES ('Admin', 'Standard')
+                                    INSERT INTO auth.roles (Role, SubRole) VALUES ('Specialist', 'Standard')
+                                    INSERT INTO auth.roles (Role, SubRole) VALUES ('User', 'Standard')
+                                    INSERT INTO auth.roles (Role, SubRole) VALUES ('User', 'Bronze')
+                                    INSERT INTO auth.roles (Role, SubRole) VALUES ('User', 'Silver')
+                                    INSERT INTO auth.roles (Role, SubRole) VALUES ('User', 'Gold')
+                                    INSERT INTO auth.roles (Role, SubRole) VALUES ('User', 'Platinum')";
+
+                    var result = connection.Execute(sql);
+
+                    connection.Close();
+
+                    return result;
+                }
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
         }
 
         private int CreateDeleteTrigger()

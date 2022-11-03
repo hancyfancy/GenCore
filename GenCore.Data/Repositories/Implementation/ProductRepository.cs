@@ -22,6 +22,246 @@ namespace GenCore.Data.Repositories.Implementation
         {
             _sqlConverter = new JsonToSqlUpdateParameterConverter();
             CreateTable();
+            CreateDeleteTrigger();
+            CreateInsertTrigger();
+            CreateInsertTrigger();
+        }
+
+        private int CreateDeleteTrigger()
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    string sql = $@"USE {_database}
+
+                                    IF 
+	                                    (EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
+                                                        WHERE TABLE_SCHEMA = 'production' 
+                                                        AND  TABLE_NAME = 'products'))
+									AND
+										(NOT EXISTS (SELECT type_desc FROM sys.triggers WHERE object_id = OBJECT_ID(N'production.products_tr_delete')))
+                                    BEGIN
+                                        CREATE TRIGGER production.products_tr_delete
+										ON {_database}.production.products
+										AFTER DELETE
+										AS
+										BEGIN
+											SET NOCOUNT ON
+
+											DECLARE @Id BIGINT
+											SELECT @Id = ProductId FROM deleted
+
+											DECLARE @Name NVARCHAR(100)
+											SELECT @Name = Name FROM deleted
+
+											DECLARE @Price DECIMAL(18,2)
+											SELECT @Price = Price FROM deleted
+
+											DECLARE @Type NVARCHAR(50)
+											SELECT @Type = Type FROM deleted
+
+											DECLARE @Active BIT
+											SELECT @Active = Active FROM deleted
+
+											INSERT INTO {_database}.audit.products 
+											(ProductId, EventType, LoginName, ObjJson, AuditDateTime)
+											VALUES
+											(
+											@Id,
+											'DELETE',
+											CONVERT(NVARCHAR(250), CURRENT_USER),
+											'{{ ""Name"" : ""' + @Name + '"", ""Price"" : ' + CAST(@Price AS NVARCHAR(max)) + ', ""Type"" : ""' + @Type + '"", ""Active"" : ' + CAST(@Active AS NVARCHAR(max)) + ' }}',
+											GETDATE()
+											) 
+										END
+                                    END";
+
+                    var result = connection.Execute(sql);
+
+                    connection.Close();
+
+                    return result;
+                }
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
+        }
+
+        private int CreateInsertTrigger()
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    string sql = $@"USE {_database}
+
+                                    IF 
+	                                    (EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
+                                                        WHERE TABLE_SCHEMA = 'production' 
+                                                        AND  TABLE_NAME = 'products'))
+									AND
+										(NOT EXISTS (SELECT type_desc FROM sys.triggers WHERE object_id = OBJECT_ID(N'production.products_tr_insert')))
+                                    BEGIN
+                                        CREATE TRIGGER production.products_tr_insert
+										ON {_database}.production.products
+										AFTER INSERT
+										AS
+										BEGIN
+											SET NOCOUNT ON
+
+											DECLARE @Id BIGINT
+											SELECT @Id = ProductId FROM inserted
+
+											DECLARE @Name NVARCHAR(100)
+											SELECT @Name = Name FROM inserted
+
+											DECLARE @Price DECIMAL(18,2)
+											SELECT @Price = Price FROM inserted
+
+											DECLARE @Type NVARCHAR(50)
+											SELECT @Type = Type FROM inserted
+
+											DECLARE @Active BIT
+											SELECT @Active = Active FROM inserted
+
+											INSERT INTO {_database}.audit.products 
+											(ProductId, EventType, LoginName, ObjJson, AuditDateTime)
+											VALUES
+											(
+											@Id,
+											'INSERT',
+											CONVERT(NVARCHAR(250), CURRENT_USER),
+											'{{ ""Name"" : ""' + @Name + '"", ""Price"" : ' + CAST(@Price AS NVARCHAR(max)) + ', ""Type"" : ""' + @Type + '"", ""Active"" : ' + CAST(@Active AS NVARCHAR(max)) + ' }}',
+											GETDATE()
+											) 
+										END
+                                    END";
+
+                    var result = connection.Execute(sql);
+
+                    connection.Close();
+
+                    return result;
+                }
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
+        }
+
+        private int CreateUpdateTrigger()
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    string sql = $@"USE {_database}
+
+                                    IF 
+	                                    (EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
+                                                        WHERE TABLE_SCHEMA = 'production' 
+                                                        AND  TABLE_NAME = 'products'))
+									AND
+										(NOT EXISTS (SELECT type_desc FROM sys.triggers WHERE object_id = OBJECT_ID(N'production.products_tr_update')))
+                                    BEGIN
+                                        CREATE TRIGGER production.products_tr_update
+										ON {_database}.production.products
+										AFTER UPDATE
+										AS
+										BEGIN
+											SET NOCOUNT ON
+
+											DECLARE @DeletedId BIGINT
+											SELECT @DeletedId = ProductId FROM deleted
+
+											DECLARE @DeletedName NVARCHAR(100)
+											SELECT @DeletedName = Name FROM deleted
+
+											DECLARE @DeletedPrice DECIMAL(18,2)
+											SELECT @DeletedPrice = Price FROM deleted
+
+											DECLARE @DeletedType NVARCHAR(50)
+											SELECT @DeletedType = Type FROM deleted
+
+											DECLARE @DeletedActive BIT
+											SELECT @DeletedActive = Active FROM deleted
+
+											DECLARE @InsertedId BIGINT
+											SELECT @InsertedId = ProductId FROM inserted
+
+											DECLARE @InsertedName NVARCHAR(100)
+											SELECT @InsertedName = Name FROM inserted
+
+											DECLARE @InsertedPrice DECIMAL(18,2)
+											SELECT @InsertedPrice = Price FROM inserted
+
+											DECLARE @InsertedType NVARCHAR(50)
+											SELECT @InsertedType = Type FROM inserted
+
+											DECLARE @InsertedActive BIT
+											SELECT @InsertedActive = Active FROM inserted
+
+											INSERT INTO {_database}.audit.products 
+											(ProductId, EventType, LoginName, ObjJson, AuditDateTime)
+											VALUES
+											(
+											@InsertedId,
+											'UPDATE',
+											CONVERT(NVARCHAR(250), CURRENT_USER),
+											'[{{ ""Name"" : ""' + @DeletedName + '"", ""Price"" : ' + CAST(@DeletedPrice AS NVARCHAR(max)) + ', ""Type"" : ""' + @DeletedType + '"", ""Active"" : ' + CAST(@DeletedActive AS NVARCHAR(max)) + ' }},{{ ""Name"" : ""' + @InsertedName + '"", ""Price"" : ' + CAST(@InsertedPrice AS NVARCHAR(max)) + ', ""Type"" : ""' + @InsertedType + '"", ""Active"" : ' + CAST(@InsertedActive AS NVARCHAR(max)) + ' }}]',
+											GETDATE()
+											) 
+										END
+                                    END";
+
+                    var result = connection.Execute(sql);
+
+                    connection.Close();
+
+                    return result;
+                }
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
+        }
+
+        private int DropTriggers()
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    string sql = $@"USE {_database}
+
+                                    DROP TRIGGER IF EXISTS production.products_tr_delete
+                                    DROP TRIGGER IF EXISTS production.products_tr_insert
+                                    DROP TRIGGER IF EXISTS production.products_tr_update";
+
+                    var result = connection.Execute(sql);
+
+                    connection.Close();
+
+                    return result;
+                }
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
         }
 
         private int CreateTable()

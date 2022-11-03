@@ -66,7 +66,7 @@ namespace GenCore.Data.Repositories.Implementation
             }
         }
 
-        private int DropDeleteTrigger()
+        private int DropTriggers()
         {
             try
             {

@@ -18,6 +18,70 @@ namespace GenCore.Data.Repositories.Implementation
         public ProductAuditRepository(string connectionString)
         {
             _connectionString = connectionString;
+            CreateTable();
+        }
+
+        private int CreateTable()
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    string sql = $@"IF 
+	                                    (NOT EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
+                                                        WHERE TABLE_SCHEMA = 'audit' 
+                                                        AND  TABLE_NAME = 'products')) 
+                                    AND
+	                                    (EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
+                                                        WHERE TABLE_SCHEMA = 'production' 
+                                                        AND  TABLE_NAME = 'products'))
+                                    BEGIN
+                                        CREATE TABLE audit.products (
+											ProductAuditId BIGINT IDENTITY (1, 1) PRIMARY KEY,
+											ProductId BIGINT NOT NULL,
+											EventType NVARCHAR (250) NOT NULL CHECK (LEN(EventType) > 0),
+											LoginName NVARCHAR (250) NOT NULL CHECK (LEN(LoginName) > 0),
+											ObjJson NVARCHAR (MAX) NOT NULL CHECK (LEN(ObjJson) > 0),
+											AuditDateTime DATETIME NOT NULL
+										)
+                                    END";
+
+                    var result = connection.Execute(sql);
+
+                    connection.Close();
+
+                    return result;
+                }
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
+        }
+
+        private int DropTable()
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    string sql = $@"DROP TABLE IF EXISTS audit.products";
+
+                    var result = connection.Execute(sql);
+
+                    connection.Close();
+
+                    return result;
+                }
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
         }
 
         public IEnumerable<ProductAudit> GetUpdates(long productId)

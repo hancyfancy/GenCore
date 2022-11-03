@@ -23,6 +23,65 @@ namespace GenCore.Data.Repositories.Implementation
         {
             _connectionString = connectionString;
             _sqlConverter = new JsonToSqlUpdateParameterConverter();
+            CreateTable();
+        }
+
+        private int CreateTable()
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    string sql = $@"IF 
+	                                    (NOT EXISTS (SELECT TABLE_CATALOG FROM INFORMATION_SCHEMA.TABLES  
+                                                        WHERE TABLE_SCHEMA = 'production' 
+                                                        AND  TABLE_NAME = 'products')) 
+                                    BEGIN
+                                        CREATE TABLE production.products (
+											ProductId BIGINT IDENTITY (1, 1) PRIMARY KEY,
+											Name NVARCHAR (100) NOT NULL CHECK (LEN(Name) > 0),
+											Price DECIMAL (18,2) NOT NULL CHECK (Price > 0),
+											Type NVARCHAR (50) NOT NULL CHECK (Type = 'Toys' OR Type = 'Food' OR Type = 'Electronics' OR Type = 'Furniture' OR Type = 'Books'),
+											Active BIT NOT NULL
+										)
+                                    END";
+
+                    var result = connection.Execute(sql);
+
+                    connection.Close();
+
+                    return result;
+                }
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
+        }
+
+        private int DropTable()
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    string sql = $@"DROP TABLE IF EXISTS production.products";
+
+                    var result = connection.Execute(sql);
+
+                    connection.Close();
+
+                    return result;
+                }
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
         }
 
         public IEnumerable<Product> Get()

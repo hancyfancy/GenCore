@@ -1,7 +1,7 @@
 ﻿using Dapper;
+using GenCommon.Shared.Extensions;
 using GenConversion.Service.Utilities.Implementation;
 using GenConversion.Service.Utilities.Interface;
-using GenCore.Data.Extensions;
 using GenCore.Data.Models;
 using GenCore.Data.Repositories.Interface;
 using System;

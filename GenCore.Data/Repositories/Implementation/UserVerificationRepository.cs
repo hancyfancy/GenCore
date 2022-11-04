@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace GenCore.Data.Repositories.Implementation
 {
-    public class UserVerificationRepository : RepositoryBase, IUserVerificationRepository
+    public class UserVerificationRepository : ConnectionBase, IUserVerificationRepository
     {
         public UserVerificationRepository(string connectionString) : base(connectionString)
         {

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace GenCore.Data.Repositories.Implementation
 {
-    public class RolesRepository : RepositoryBase, IRolesRepository
+    public class RolesRepository : ConnectionBase, IRolesRepository
     {
         public RolesRepository(string connectionString) : base(connectionString)
         {

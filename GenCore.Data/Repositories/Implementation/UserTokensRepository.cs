@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace GenCore.Data.Repositories.Implementation
 {
-    public class UserTokensRepository : RepositoryBase, IUserTokensRepository
+    public class UserTokensRepository : ConnectionBase, IUserTokensRepository
     {
         public UserTokensRepository(string connectionString) : base(connectionString)
         {

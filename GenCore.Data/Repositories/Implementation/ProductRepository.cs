@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace GenCore.Data.Repositories.Implementation
 {
-    public class ProductRepository : RepositoryBase, IProductRepository
+    public class ProductRepository : ConnectionBase, IProductRepository
     {
         private readonly ISqlConverter _sqlConverter;
 

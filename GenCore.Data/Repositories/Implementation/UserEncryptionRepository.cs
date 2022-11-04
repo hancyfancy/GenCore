@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace GenCore.Data.Repositories.Implementation
 {
-    public class UserEncryptionRepository : RepositoryBase, IUserEncryptionRepository
+    public class UserEncryptionRepository : ConnectionBase, IUserEncryptionRepository
     {
         public UserEncryptionRepository(string connectionString) : base(connectionString)
         {

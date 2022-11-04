@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace GenCore.Data.Repositories.Implementation
 {
-    public class UserRolesRepository : RepositoryBase, IUserRolesRepository
+    public class UserRolesRepository : ConnectionBase, IUserRolesRepository
     {
         public UserRolesRepository(string connectionString) : base(connectionString)
         {

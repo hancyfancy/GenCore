@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace GenCore.Data.Repositories.Implementation
 {
-    public class UserRepository : RepositoryBase, IUserRepository
+    public class UserRepository : ConnectionBase, IUserRepository
     {
         public UserRepository(string connectionString) : base(connectionString)
         {

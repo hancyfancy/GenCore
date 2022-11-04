@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace GenCore.Data.Schemas.Implementation
 {
-    internal class AuditSchema : ConnectionBase, ISchema
+    public class AuditSchema : ConnectionBase, ISchema
     {
         public AuditSchema(string connectionString) : base(connectionString)
         {

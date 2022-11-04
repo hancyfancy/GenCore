@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace GenCore.Data.Repositories.Implementation
 {
-    public class ProductAuditRepository : RepositoryBase, IProductAuditRepository
+    public class ProductAuditRepository : ConnectionBase, IProductAuditRepository
     {
         public ProductAuditRepository(string connectionString) : base(connectionString)
         {

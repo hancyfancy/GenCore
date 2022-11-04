@@ -167,7 +167,7 @@ namespace GenCore.Data.Repositories.Implementation
             }
         }
 
-        public User GetUser(string token)
+        public UserToken Get(string token)
         {
             try
             {
@@ -183,13 +183,15 @@ namespace GenCore.Data.Repositories.Implementation
 										u.Email,
 										u.Phone,
 										u.LastActive,
-										t.RefreshAt AS Expiry
+                                        t.UserTokenId,
+										t.RefreshAt
                                     FROM 
 	                                    auth.usertokens t
 										INNER JOIN auth.users u on u.UserId = t.UserId
 									WHERE
 										t.Token = @Token";
-                    var result = connection.Query<User>(sql, new
+
+                    var result = connection.Query<UserToken>(sql, new
                     {
                         Token = token
                     });

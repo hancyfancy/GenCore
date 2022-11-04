@@ -13,6 +13,6 @@ namespace GenCore.Data.Repositories.Interface
 
         UserToken Get(long userId);
 
-        User GetUser(string token);
+        UserToken Get(string token);
     }
 }
